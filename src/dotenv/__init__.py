@@ -23,12 +23,13 @@ def get_cli_string(
     to be passed to a `local` or `run` command.
 
     The path is quoted for use in a POSIX shell.
+    Shell variables and wildcards in the path are treated literally.
     """
     command = ["dotenv"]
     if quote:
         command.append(f"-q {quote}")
     if path:
-        command.append(f"-f {shlex.quote(path)}")
+        command.append(f"-f {shlex.quote(str(path))}")
     if action:
         command.append(action)
         if key:

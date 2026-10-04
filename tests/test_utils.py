@@ -1,4 +1,5 @@
 import shlex
+from pathlib import Path
 
 import pytest
 
@@ -28,13 +29,14 @@ def test_to_cli_string():
     "directory",
     ["app", "my app", "app's"],
 )
-def test_to_cli_string_path(cli, tmp_path, directory):
+@pytest.mark.parametrize("path_type", [str, Path])
+def test_to_cli_string_path(cli, tmp_path, directory, path_type):
     project = tmp_path / directory
     project.mkdir()
     path = project / ".env"
     path.write_text("DEBUG=True\n")
 
-    command = c(path=str(path), action="get", key="DEBUG")
+    command = c(path=path_type(path), action="get", key="DEBUG")
     result = cli.invoke(dotenv_cli, shlex.split(command)[1:])
 
     assert (result.exit_code, result.output) == (0, "True\n")
